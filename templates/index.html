@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聪聪思培单词卡 📚</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 25px 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            text-align: center;
+            min-width: 100px;
+            transition: all 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .stat-card:active {
+            transform: translateY(0);
+        }
+        
+        .stat-card h3 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card p {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 22px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .word-card {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .word-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .word-card.flipped {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+        }
+        
+        .word-card.mastered {
+            opacity: 0.6;
+        }
+        
+        .word-front {
+            text-align: center;
+        }
+        
+        .word-front h3 {
+            font-size: 36px;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: 700;
+        }
+        
+        .word-back {
+            display: none;
+        }
+        
+        .word-card.flipped .word-front {
+            display: none;
+        }
+        
+        .word-card.flipped .word-back {
+            display: block;
+        }
+        
+        .word-back h4 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .word-back p {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .word-back .example {
+            font-style: italic;
+            color: #777;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 12px;
+        }
+        
+        .word-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .word-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        
+        .word-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .word-item-info {
+            flex: 1;
+        }
+        
+        .word-item-info h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .word-item-info p {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .word-item-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #ee5a5a;
+        }
+        
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #40c057;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+        
+        .empty-state .emoji {
+            font-size: 64px;
+            margin-bottom: 15px;
+        }
+        
+        .flip-hint {
+            text-align: center;
+            color: #999;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        .review-controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .footer {
+            margin-top: 40px;
+            padding: 30px 20px;
+            text-align: center;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        
+        .footer-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .footer-heart {
+            font-size: 32px;
+            margin-bottom: 15px;
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
+        
+        .footer-text {
+            font-size: 16px;
+            color: #666;
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        
+        .footer-subtext {
+            font-size: 15px;
+            color: #888;
+            margin-bottom: 10px;
+            line-height: 1.6;
+        }
+        
+        .footer-year {
+            font-size: 14px;
+            color: #999;
+            margin-top: 10px;
+        }
+        
+        .footer-name {
+            color: #667eea;
+            font-weight: 600;
+            font-style: italic;
+        }
+        
+        .footer-name:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 聪聪思培单词卡</h1>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <div class="stats">
+                    <div class="stat-card" onclick="startReview('all')" style="cursor: pointer;" title="点击开始复习所有单词">
+                        <h3 id="statTotal">0</h3>
+                        <p>总单词</p>
+                    </div>
+                    <div class="stat-card" onclick="startReview('mastered')" style="cursor: pointer;" title="点击复习已掌握的单词">
+                        <h3 id="statMastered">0</h3>
+                        <p>已掌握</p>
+                    </div>
+                    <div class="stat-card" onclick="startReview('to_review')" style="cursor: pointer;" title="点击复习不熟词">
+                        <h3 id="statToReview">0</h3>
+                        <p>不熟词</p>
+                    </div>
+                </div>
+                <a href="/logout" class="btn btn-secondary">退出</a>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="card">
+                <h2>➕ 添加新单词</h2>
+                <form id="addWordForm">
+                    <div class="form-group">
+                        <label for="word">单词</label>
+                        <div style="display: flex; gap: 5px;">
+                            <input type="text" id="word" name="word" required placeholder="输入英文单词..." style="flex: 1;">
+                            <button type="button" class="btn btn-secondary" onclick="autoFillWord()" style="white-space: nowrap;">🔍 自动获取</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="meaning">释义</label>
+                        <textarea id="meaning" name="meaning" required placeholder="输入单词的释义（可自动获取）..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="example">例句（可选）</label>
+                        <textarea id="example" name="example" placeholder="输入例句（可自动获取）..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">添加单词 ✨</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>🃏 单词卡复习 <span id="reviewMode" style="font-size: 14px; color: #999; font-weight: normal;"></span></h2>
+                <div id="reviewCard" class="word-card" style="display: none;">
+                    <div class="word-front">
+                        <h3 id="cardWord">单词</h3>
+                        <p class="flip-hint">点击卡片查看释义</p>
+                    </div>
+                    <div class="word-back">
+                        <h4 id="cardWordBack">单词</h4>
+                        <p id="cardMeaning">释义</p>
+                        <p class="example" id="cardExample"></p>
+                    </div>
+                </div>
+                <div id="reviewControls" class="review-controls" style="display: none;">
+                    <button class="btn btn-danger btn-small" onclick="markAsDifficult()">😓 还需努力</button>
+                    <button class="btn btn-success btn-small" onclick="markAsMastered()">✅ 已掌握</button>
+                    <button class="btn btn-secondary btn-small" onclick="nextCard()">下一个 →</button>
+                </div>
+                <div id="reviewEmpty" class="empty-state">
+                    <div class="emoji">🎉</div>
+                    <p>所有单词都已复习完毕！</p>
+                    <p style="font-size: 12px; margin-top: 10px;">或者添加一些新单词开始学习吧～</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card" style="margin-top: 20px;">
+            <h2>📝 所有单词</h2>
+            <div id="wordList" class="word-list">
+                <div class="empty-state">
+                    <div class="emoji">📖</div>
+                    <p>还没有添加单词，快添加第一个吧！</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <div class="footer-content">
+                <div class="footer-heart">💝</div>
+                <p class="footer-text">
+                    Designed and implemented by <span class="footer-name">Guan Qiang</span>
+                </p>
+                <p class="footer-subtext">
+                    as a Christmas gift for <span class="footer-name">Estella</span>
+                </p>
+                <p class="footer-year">2025 ✨</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let allWords = [];
+        let currentReviewIndex = 0;
+        let reviewWords = [];
+        let currentReviewMode = 'to_review'; // 'all', 'mastered', 'to_review'
+        
+        // 加载数据
+        async function loadData() {
+            try {
+                const [wordsRes, statsRes] = await Promise.all([
+                    fetch('/api/words'),
+                    fetch('/api/stats')
+                ]);
+                
+                allWords = await wordsRes.json();
+                const stats = await statsRes.json();
+                
+                // 更新统计
+                document.getElementById('statTotal').textContent = stats.total;
+                document.getElementById('statMastered').textContent = stats.mastered;
+                document.getElementById('statToReview').textContent = stats.to_review;
+                
+                // 更新单词列表
+                updateWordList();
+                
+                // 根据当前模式更新复习卡片
+                updateReviewWordsByMode();
+                updateReviewCard();
+            } catch (error) {
+                console.error('加载数据失败:', error);
+            }
+        }
+        
+        // 根据模式更新复习单词列表
+        function updateReviewWordsByMode() {
+            if (currentReviewMode === 'all') {
+                reviewWords = [...allWords];
+            } else if (currentReviewMode === 'mastered') {
+                reviewWords = allWords.filter(w => w.mastered);
+            } else { // to_review
+                reviewWords = allWords.filter(w => !w.mastered);
+            }
+            currentReviewIndex = 0;
+        }
+        
+        // 开始复习
+        function startReview(mode) {
+            currentReviewMode = mode;
+            updateReviewWordsByMode();
+            updateReviewCard();
+            
+            // 更新模式显示
+            const modeNames = {
+                'all': '全部单词',
+                'mastered': '已掌握',
+                'to_review': '不熟词'
+            };
+            document.getElementById('reviewMode').textContent = `(${modeNames[mode]})`;
+        }
+        
+        // 更新单词列表
+        function updateWordList() {
+            const wordList = document.getElementById('wordList');
+            
+            if (allWords.length === 0) {
+                wordList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="emoji">📖</div>
+                        <p>还没有添加单词，快添加第一个吧！</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            wordList.innerHTML = allWords.map(word => `
+                <div class="word-item">
+                    <div class="word-item-info">
+                        <h4>${word.word} ${word.mastered ? '✅' : ''}</h4>
+                        <p>${word.meaning}</p>
+                        ${word.example ? `<p style="font-style: italic; color: #999; font-size: 12px;">${word.example}</p>` : ''}
+                    </div>
+                    <div class="word-item-actions">
+                        <button class="btn btn-danger btn-small" onclick="deleteWord(${word.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // 更新复习卡片
+        function updateReviewCard() {
+            const reviewCard = document.getElementById('reviewCard');
+            const reviewControls = document.getElementById('reviewControls');
+            const reviewEmpty = document.getElementById('reviewEmpty');
+            
+            if (reviewWords.length === 0) {
+                reviewCard.style.display = 'none';
+                reviewControls.style.display = 'none';
+                reviewEmpty.style.display = 'block';
+                return;
+            }
+            
+            reviewEmpty.style.display = 'none';
+            reviewCard.style.display = 'flex';
+            reviewControls.style.display = 'flex';
+            
+            const word = reviewWords[currentReviewIndex];
+            document.getElementById('cardWord').textContent = word.word;
+            document.getElementById('cardWordBack').textContent = word.word;
+            document.getElementById('cardMeaning').textContent = word.meaning;
+            document.getElementById('cardExample').textContent = word.example || '';
+            document.getElementById('cardExample').style.display = word.example ? 'block' : 'none';
+            
+            reviewCard.classList.remove('flipped');
+        }
+        
+        // 自动获取单词释义
+        async function autoFillWord() {
+            const wordInput = document.getElementById('word');
+            const meaningInput = document.getElementById('meaning');
+            const exampleInput = document.getElementById('example');
+            const word = wordInput.value.trim();
+            
+            if (!word) {
+                alert('请先输入单词');
+                return;
+            }
+            
+            // 显示加载状态
+            const originalText = wordInput.value;
+            wordInput.disabled = true;
+            wordInput.value = '正在获取...';
+            
+            try {
+                const response = await fetch(`/api/lookup?word=${encodeURIComponent(word)}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    meaningInput.value = data.meaning || '';
+                    exampleInput.value = data.example || '';
+                    
+                    let message = '释义已自动填充！✨';
+                    if (data.example) {
+                        message += '\n例句也已自动填充！';
+                    } else if (data.meaning) {
+                        message += '\n（未找到例句，可手动添加）';
+                    }
+                    alert(message);
+                } else {
+                    alert(data.message || '未找到该单词的释义，请手动输入');
+                }
+            } catch (error) {
+                alert('获取失败，请检查网络连接或手动输入');
+            } finally {
+                wordInput.disabled = false;
+                wordInput.value = originalText;
+            }
+        }
+        
+        // 添加单词
+        document.getElementById('addWordForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const word = document.getElementById('word').value.trim();
+            const meaning = document.getElementById('meaning').value.trim();
+            const example = document.getElementById('example').value.trim();
+            
+            if (!word || !meaning) {
+                alert('请至少输入单词和释义');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/words', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ word, meaning, example })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('addWordForm').reset();
+                    loadData();
+                } else {
+                    alert('添加失败：' + (data.message || '未知错误'));
+                }
+            } catch (error) {
+                alert('网络错误，请重试');
+            }
+        });
+        
+        // 删除单词
+        async function deleteWord(wordId) {
+            if (!confirm('确定要删除这个单词吗？')) return;
+            
+            try {
+                const response = await fetch(`/api/words/${wordId}`, {
+                    method: 'DELETE'
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    loadData();
+                }
+            } catch (error) {
+                alert('删除失败');
+            }
+        }
+        
+        // 翻转卡片
+        document.getElementById('reviewCard').addEventListener('click', function() {
+            if (!this.classList.contains('flipped')) {
+                this.classList.add('flipped');
+            }
+        });
+        
+        // 标记为已掌握
+        async function markAsMastered() {
+            const word = reviewWords[currentReviewIndex];
+            await reviewWord(word.id, true);
+        }
+        
+        // 标记为还需努力
+        async function markAsDifficult() {
+            const word = reviewWords[currentReviewIndex];
+            await reviewWord(word.id, false);
+        }
+        
+        // 下一个卡片
+        function nextCard() {
+            currentReviewIndex = (currentReviewIndex + 1) % reviewWords.length;
+            updateReviewCard();
+        }
+        
+        // 复习单词
+        async function reviewWord(wordId, mastered) {
+            try {
+                const response = await fetch(`/api/words/${wordId}/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ mastered })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    // 重新加载数据
+                    await loadData();
+                    // 根据当前模式重新更新复习列表
+                    updateReviewWordsByMode();
+                    updateReviewCard();
+                }
+            } catch (error) {
+                alert('操作失败');
+            }
+        }
+        
+        // 初始化
+        loadData();
+        // 默认显示不熟词模式
+        document.getElementById('reviewMode').textContent = '(不熟词)';
+    </script>
+</body>
+</html>
+
